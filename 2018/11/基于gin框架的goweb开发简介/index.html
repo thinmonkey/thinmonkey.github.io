@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.50 with theme Tranquilpeak 0.4.3-SNAPSHOT">
+<meta name="author" content="张好">
+<meta name="keywords" content="gin, go web开发">
+<meta name="description" content="">
+
+
+<meta property="og:description" content="">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于gin框架的goweb开发简介">
+<meta name="twitter:title" content="基于gin框架的goweb开发简介">
+<meta property="og:url" content="https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+<meta property="twitter:url" content="https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+<meta property="og:site_name" content="花果山">
+<meta property="og:description" content="">
+<meta name="twitter:description" content="">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2018-11-21T21:48:35">
+  
+  
+    <meta property="article:modified_time" content="2018-11-21T21:48:35">
+  
+  
+  
+    
+      <meta property="article:section" content="服务器开发">
+    
+      <meta property="article:section" content="go语言">
+    
+  
+  
+    
+      <meta property="article:tag" content="go web开发">
+    
+      <meta property="article:tag" content="web服务开发">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://www.gravatar.com/avatar/0952cb0ade67594791058f16f52f3844?s=640">
+  <meta property="twitter:image" content="https://www.gravatar.com/avatar/0952cb0ade67594791058f16f52f3844?s=640">
+
+
+    <title>基于gin框架的goweb开发简介</title>
+
+    <link rel="icon" href="https://thinmonkey.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://thinmonkey.github.io/css/style-nnm2spxvve8onlujjlegkkytaehyadd4ksxc1hyzzq9a2wvtrgbljqyulomn.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://thinmonkey.github.io/">花果山</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://thinmonkey.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://www.gravatar.com/avatar/0952cb0ade67594791058f16f52f3844?s=90" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://thinmonkey.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/0952cb0ade67594791058f16f52f3844?s=110" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">张好</h4>
+        
+          <h5 class="sidebar-profile-bio">学无止境，砥砺前行</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://thinmonkey.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://thinmonkey.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://thinmonkey.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://thinmonkey.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://thinmonkey.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/thinmonkey" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/636472/kakawait" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://thinmonkey.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      基于gin框架的goweb开发简介
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2018-11-21T21:48:35&#43;08:00">
+        
+  十一月 21, 2018
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://thinmonkey.github.io/categories/%e6%9c%8d%e5%8a%a1%e5%99%a8%e5%bc%80%e5%8f%91">服务器开发</a>, 
+    
+      <a class="category-link" href="https://thinmonkey.github.io/categories/go%e8%af%ad%e8%a8%80">go语言</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p></p>
+
+<h1 id="简介">简介</h1>
+
+<p>前面讲了基于go语言搭建一个简单的web服务，让大家可以看到go原生api起一个web服务是非常方便的。当然，那个项目仅仅停留在学习和实验中，真实的项目的需求是复杂的，我们要考虑的东西很多，这个时候仅仅使用原生的api是很难满足企业级的需求的。所以我们需要使用社区开源的成熟的框架来帮助我们满足基本的项目需求开发。今天我就给大家讲一下，在go语言中，如何用web框架gin + orm框架gorm + 配置管理框架viper + 日志框架logrus + mysql搭建一个简单的企业级的web api服务。</p>
+
+<h2 id="项目引用第三方库介绍">项目引用第三方库介绍</h2>
+
+<h3 id="gin-https-github-com-gin-gonic-gin-gin"><a href="https://github.com/gin-gonic/gin" title="gin">gin</a></h3>
+
+<p>gin是用go写的高性能web框架，官方形容为martini-like API提供者。如果你开发的项目有高性能的指标要求，那么它将是你的首选。gin提供丰富http请求方法，高效灵活的路由配置功能和动态配置的中间件处理以及比较全面的用法示例。</p>
+
+<h3 id="gorm-http-gorm-io-gorm"><a href="http://gorm.io/" title="gorm">gorm</a></h3>
+
+<p>gorm是go开发的高性能的orm库，提供丰富的功能。功能如下：全功能 ORM (无限接近),关联 (Has One, Has Many, Belongs To, Many To Many, 多态),钩子 (在创建/保存/更新/删除/查找之前或之后)，预加载，事务，复合主键，SQL 生成器，数据库自动迁移，自定义日志，可扩展性, 可基于 GORM 回调编写插件，所有功能都被测试覆盖，开发者友好。</p>
+
+<h2 id="viper-https-github-com-spf13-viper-viper"><a href="https://github.com/spf13/viper" title="viper">viper</a></h2>
+
+<p>viper是功能强大的配置管理库。支持多种格式，多种来源的配置管理。支持配置的动态改变监听。</p>
+
+<h2 id="logrus-https-github-com-sirupsen-logrus"><a href="https://github.com/sirupsen/logrus">logrus</a></h2>
+
+<p>Logrus是Go的结构化日志记录器（golang），与标准库日志记录器完全兼容。</p>
+
+<h2 id="项目启动">项目启动</h2>
+
+<h3 id="需求描述">需求描述</h3>
+
+<p>我们简单模拟创建一个用户管理服务，用户管理服务提供对用户的增删改查功能。</p>
+
+<h3 id="项目开发阶段">项目开发阶段</h3>
+
+<ol>
+<li>在goland下创建user-manager项目
+<img src="https://thinmonkey.github.io/go_language03/create_user_manager_project.png" alt="image" /></li>
+
+<li><p>创建项目目录结构
+<img src="https://thinmonkey.github.io/go_language03/user_manager_project_struct.png" alt="image" /></p>
+
+<h4 id="项目结构说明">项目结构说明：</h4>
+
+<ul>
+<li>config 配置启动目录，在该目录中进行环境配置，log日志配置，数据库配置。</li>
+<li>handle web路由的处理入口目录，gin的所有路由配置的handle函数均定义在该目录中。</li>
+<li>locallog 本地开发的日志存放目录。</li>
+<li>models 数据模型目录，数据库实体模型，数据库引擎初始化，数据实体dao均在该目录进行。</li>
+<li>router 路由配置目录，路由相关的配置均在该目录进行。</li>
+<li>service 实现服务业务逻辑的目录，业务的调用在该目录进行。</li>
+<li>utils 纯项目无关的工具类的存放目录。</li>
+<li>config.json 项目配置文件，viper从该文件读取本地配置。</li>
+<li>main.go 项目的启动入口文件。定义项目的启动流程。
+<br /></li>
+</ul></li>
+</ol>
+
+<h3 id="关键模块源码">关键模块源码：</h3>
+
+<p>1.项目目录下的启动入口文件main.go，类似java的带有启动main函数的class文件：</p>
+
+<pre><code>package main
+//项目依赖引入
+import (
+    &quot;github.com/thinmonkey/user-manager/config&quot;
+    &quot;github.com/gin-gonic/gin&quot;
+    &quot;net/http&quot;
+    &quot;github.com/thinmonkey/user-manager/router&quot;
+    &quot;github.com/thinmonkey/user-manager/utils/log&quot;
+)
+
+func main() {//程序入口文件
+
+    config.Init()//执行配置初始化逻辑
+
+    // 创建  Gin engine.
+    gin := gin.New()
+
+    // 进行路由模块配置
+    router.Load(
+        // Cores.
+        gin,
+        // Middlwares.
+    )
+
+    //启动Gin http服务器，监听在localhost:8088,打印启动错误日志
+    log.Info(http.ListenAndServe(&quot;:8088&quot;, gin).Error())
+}
+</code></pre>
+
+<p>2.http路由配置文件router.go，在此文件中配置程序提供的http请求的路由和处理handler。</p>
+
+<pre><code>package router
+
+import (
+    &quot;github.com/gin-gonic/gin&quot;
+    &quot;net/http&quot;
+    &quot;github.com/thinmonkey/user-manager/router/middlewares&quot;
+    &quot;github.com/thinmonkey/user-manager/handle&quot;
+)
+
+// 配置gin框架的middlewares（中间件，统一处理请求和响应）, routes（服务路径配置）, handlers（路由的处理函数）
+func Load(router *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
+    // 配置Middlewares。
+    router.Use(gin.Recovery())
+    router.Use(middlewares.LoggerMiddlerware())
+    router.Use(mw...)
+    // 配置找不到路由时返回404的处理Handler.
+    router.NoRoute(func(c *gin.Context) {
+        c.String(http.StatusNotFound, &quot;The incorrect API route.&quot;)
+    })
+    // 配置健康检查的处理handler
+    router.GET(&quot;/healthcheck&quot;, func(context *gin.Context) {
+        context.JSON(http.StatusOK, gin.H{&quot;code&quot;: 200})
+    })
+    //配置路由组apiV1
+    apiV1 := router.Group(&quot;/api/v1/&quot;)
+    {
+        //按照rest风格配置匹配各个路由的handler
+        apiV1.GET(&quot;user/:userId&quot;, handle.GetUser)
+        apiV1.DELETE(&quot;user/:userId&quot;,handle.DeleteUser)
+        apiV1.PUT(&quot;user/:userId&quot;, handle.UpdateUser)
+        apiV1.POST(&quot;user&quot;, handle.CreateUser)
+    }
+    //返回路由对象
+    return router
+}
+</code></pre>
+
+<p>3.http用户模块的handler文件user_handler.go</p>
+
+<pre><code>package handle
+
+import &quot;github.com/gin-gonic/gin&quot;
+
+func CreateUser(c *gin.Context) {
+
+}
+
+func UpdateUser(c *gin.Context) {
+
+}
+
+func DeleteUser(c *gin.Context) {
+
+}
+
+func GetUser(c *gin.Context) {
+
+}
+</code></pre>
+
+<h2 id="总结">总结</h2>
+
+<p>本文从实际出发，以应用的角度讲述了一个基于gin框架的goweb项目总体结构和各个模块的功能，并且提供了示例项目源码<a href="https://github.com/thinmonkey/user-manager">user-manager</a>。在如今后端盛行的微服务架构中，以前的集中式大项目基本上不存在了，现在的服务都是由一个个小的应用和服务组成的，所以每个项目的功能和代码并不会太复杂，一个高性能的web框架加上一个支持动态化的配置工具基本上能满足基本的业务需求。其他的功能就是通过基本的orm框架完成数据增删改查，基本的日志框架实现日志打印功能，方便问题定位和排查。再复杂的需求可能就是加redis实现分布式缓存和rpc实现服务间的调用功能，这些框架go语言都有开源的，大家可以自己去查看。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://thinmonkey.github.io/tags/go-web%E5%BC%80%E5%8F%91/">go web开发</a>
+
+  <a class="tag tag--primary tag--small" href="https://thinmonkey.github.io/tags/web%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91/">web服务开发</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://thinmonkey.github.io/2018/11/go%E8%AF%AD%E8%A8%80%E7%BB%93%E6%9E%84%E5%92%8C%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" data-tooltip="Go语言结构和基础数据类型">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2018 张好. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://thinmonkey.github.io/2018/11/go%E8%AF%AD%E8%A8%80%E7%BB%93%E6%9E%84%E5%92%8C%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" data-tooltip="Go语言结构和基础数据类型">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fthinmonkey.github.io%2F2018%2F11%2F%25E5%259F%25BA%25E4%25BA%258Egin%25E6%25A1%2586%25E6%259E%25B6%25E7%259A%2584goweb%25E5%25BC%2580%25E5%258F%2591%25E7%25AE%2580%25E4%25BB%258B%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fthinmonkey.github.io%2F2018%2F11%2F%25E5%259F%25BA%25E4%25BA%258Egin%25E6%25A1%2586%25E6%259E%25B6%25E7%259A%2584goweb%25E5%25BC%2580%25E5%258F%2591%25E7%25AE%2580%25E4%25BB%258B%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2Fthinmonkey.github.io%2F2018%2F11%2F%25E5%259F%25BA%25E4%25BA%258Egin%25E6%25A1%2586%25E6%259E%25B6%25E7%259A%2584goweb%25E5%25BC%2580%25E5%258F%2591%25E7%25AE%2580%25E4%25BB%258B%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://www.gravatar.com/avatar/0952cb0ade67594791058f16f52f3844?s=110" alt="作者的图片" />
+    
+    <h4 id="about-card-name">张好</h4>
+    
+      <div id="about-card-bio">学无止境，砥砺前行</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        IT工程师
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        杭州
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://thinmonkey.github.io/2018/11/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B/">
+                <h3 class="media-heading">基于gin框架的goweb开发简介</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://thinmonkey.github.io/2018/11/go%E8%AF%AD%E8%A8%80%E7%BB%93%E6%9E%84%E5%92%8C%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
+                <h3 class="media-heading">Go语言结构和基础数据类型</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://thinmonkey.github.io/2018/11/goweb%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+                <h3 class="media-heading">goweb项目开发环境搭建</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://thinmonkey.github.io/2018/11/go%E8%AF%AD%E8%A8%80%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+                <h3 class="media-heading">go语言环境搭建</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         4 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('https://thinmonkey.github.io/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://thinmonkey.github.io/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/thinmonkey.github.io\/2018\/11\/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B\/';
+          
+            this.page.identifier = '\/2018\/11\/%E5%9F%BA%E4%BA%8Egin%E6%A1%86%E6%9E%B6%E7%9A%84goweb%E5%BC%80%E5%8F%91%E7%AE%80%E4%BB%8B\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+
